@@ -1,0 +1,10 @@
+1.  channel可以调用两次consumer、多个消费者的问题 ?
+2.  测试一个手动ack和nack的例子？
+3.  测试一个自动ack的例子
+1.  Invalid configuration: 'routingKey' must be non-null
+2.  
+
+# 1.rabbitMq特征解析
+## 1.prefetch
+1.  这被称为rabbit的Qos，其实说白了就是rabbit的滑动窗口的大小。
+2.  
