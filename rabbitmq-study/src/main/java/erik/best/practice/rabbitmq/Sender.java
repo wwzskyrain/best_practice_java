@@ -1,8 +1,8 @@
 package erik.best.practice.rabbitmq;
 
 import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
+
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +23,6 @@ public class Sender {
     public Sender(String exchangeName) {
         this.channel = ChannelFactory.newChannelWithLocalRabbitMqServer();
         this.exchangeName = exchangeName;
-
     }
 
     public void sendMessage(String routingKey, String message) throws IOException {
