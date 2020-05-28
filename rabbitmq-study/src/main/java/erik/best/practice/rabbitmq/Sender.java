@@ -1,5 +1,6 @@
 package erik.best.practice.rabbitmq;
 
+import com.rabbitmq.client.BuiltinExchangeType;
 import com.rabbitmq.client.Channel;
 
 
@@ -19,18 +20,31 @@ public class Sender {
 
     private Channel channel;
     private String exchangeName;
+    private BuiltinExchangeType exchangeType;
 
-    public Sender(String exchangeName) {
+
+    public Sender(String exchangeName, BuiltinExchangeType exchangeType) {
         this.channel = ChannelFactory.newChannelWithLocalRabbitMqServer();
         this.exchangeName = exchangeName;
+        this.exchangeType = exchangeType;
+        try {
+            channel.exchangeDeclare(exchangeName, exchangeType, true);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    public void sendMessage(String routingKey, String message) throws IOException {
-        channel.basicPublish(exchangeName, routingKey, null, message.getBytes());
+    public void sendMessage(String routingKey, String message) {
+
+        try {
+            channel.basicPublish(exchangeName, routingKey, null, message.getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void main(String[] args) throws IOException, TimeoutException {
-        Sender sender = new Sender("best.practice.exchange.first");
+        Sender sender = new Sender("best.practice.exchange.first", BuiltinExchangeType.FANOUT);
         for (int i = 0; i < 10; i++) {
             String message = String.format("message.%d", i);
             sender.sendMessage("erik", message);
