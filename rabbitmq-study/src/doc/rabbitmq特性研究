@@ -2,9 +2,27 @@
 2.  测试一个手动ack和nack的例子？
 3.  测试一个自动ack的例子
 1.  Invalid configuration: 'routingKey' must be non-null
+    1.  对于Fanout的exchange，在发布消息的时候，是不需要关心routingKey的值的，但是该值不能为null(小意思了)。
 2.  
 
 # 1.rabbitMq特征解析
 ## 1.prefetch
 1.  这被称为rabbit的Qos，其实说白了就是rabbit的滑动窗口的大小。
 2.  
+
+## 2.ttl相关
+1.  能否用rabbitMq的ttl实现一个任务延迟？
+2.  
+
+## 3.关于exchange和queue的特性
+1.  exchange的四种类型，过
+2.  exchange的durable表示这个exchange在server重启之后是否还在
+3.  queue创建时的四个属性
+    1.  durable：server重启之后是否还在
+    2.  exclusive：是否是排他的
+    3.  autoDelete：是否自动删除当它不用的时候
+
+
+
+## 4.rabbitMq相关的面试题
+1.  

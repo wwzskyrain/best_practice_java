@@ -68,6 +68,7 @@ public class TestMultiConsumerReceiver {
         }
 
         try {
+            channel1.basicQos(1);
             channel1.basicConsume(queueName, new ConsumerAdapter() {
                 @Override
                 public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
@@ -81,24 +82,24 @@ public class TestMultiConsumerReceiver {
         }
 
 
-//        final Channel channel = ChannelFactory.newChannelWithLocalRabbitMqServer();
-//        try {
-//            channel.basicQos(1);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        try {
-//            channel.basicConsume(queueName, new ConsumerAdapter() {
-//                @Override
-//                public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
-//                    waite(1);
-//                    logger.info("consumerTag={} message={}", consumerTag, new String(body));
-//                    channel.basicAck(envelope.getDeliveryTag(), false);
-//                }
-//            });
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        final Channel channel = ChannelFactory.newChannelWithLocalRabbitMqServer();
+        try {
+            channel.basicQos(1);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            channel.basicConsume(queueName, new ConsumerAdapter() {
+                @Override
+                public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
+                    waite(1);
+                    logger.info("consumerTag={} message={}", consumerTag, new String(body));
+                    channel.basicAck(envelope.getDeliveryTag(), false);
+                }
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void waite(int seconds) {
