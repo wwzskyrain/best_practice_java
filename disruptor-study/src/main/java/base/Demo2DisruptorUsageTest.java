@@ -7,13 +7,12 @@ import com.lmax.disruptor.dsl.ProducerType;
 import com.sun.istack.internal.NotNull;
 import event.AppendEvent;
 import event.LongEvent;
-import event.NumberEvent;
+
 import org.junit.Test;
 
 import java.util.Random;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.IntStream;
 
 /**
  * @author erik.wang
@@ -112,7 +111,7 @@ public class Demo2DisruptorUsageTest {
         EventTranslator<AppendEvent> translator = (AppendEvent event, long sequence) -> {
         };
 
-        Random random =new Random(System.currentTimeMillis());
+        Random random = new Random(System.currentTimeMillis());
         for (int i = 0; i < 100; i++) {
             numberEventDisruptor.publishEvent(translator);
             TimeUnit.MILLISECONDS.sleep(random.nextInt(100));
