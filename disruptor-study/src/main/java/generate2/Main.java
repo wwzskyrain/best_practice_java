@@ -37,7 +37,7 @@ public class Main {
 //        //使用disruptor创建消费者组C1,C2
         EventHandlerGroup<Trade> handlerGroup =
                 disruptor.handleEventsWith(new Handler1(), new Handler2());
-//        //声明在C1,C2完事之后执行JMS消息发送操作 也就是流程走到C3
+////        //声明在C1,C2完事之后执行JMS消息发送操作 也就是流程走到C3
         handlerGroup.then(new Handler3());
 
 
@@ -50,38 +50,26 @@ public class Main {
 
         //六边形操作. 
 
-//        Handler1 h1 = new Handler1();
-//        Handler2 h2 = new Handler2();
-//        Handler3 h3 = new Handler3();
-//        Handler4 h4 = new Handler4();
-//        Handler5 h5 = new Handler5();
+        Handler1 h1 = new Handler1();
+        Handler2 h2 = new Handler2();
+        Handler3 h3 = new Handler3();
+        Handler4 h4 = new Handler4();
+        Handler5 h5 = new Handler5();
 ////        disruptor.handleEventsWith(h1, h2);
 ////        disruptor.after(h1).handleEventsWith(h4);
 ////        disruptor.after(h2).handleEventsWith(h5);
 ////        disruptor.after(h4).handleEventsWith(h3);
 //
-//        disruptor.handleEventsWith(h1);
-//        disruptor.after(h1).handleEventsWith(h2);
-//        disruptor.after(h2).handleEventsWith(h3);
-//        disruptor.after(h3).handleEventsWith(h4);
-//        disruptor.after(h4).handleEventsWith(h5);
+        disruptor.handleEventsWith(h1);
+        disruptor.after(h1).handleEventsWith(h2);
+        disruptor.after(h2).handleEventsWith(h3);
+        disruptor.after(h3).handleEventsWith(h4);
+        disruptor.after(h4).handleEventsWith(h5);
 
         disruptor.start();//启动  
         CountDownLatch latch = new CountDownLatch(1);
         //生产者准备  
-//        executor.submit(new TradePublisher(latch, disruptor));
-
-        int LOOP = 10;
-
-        TradeEventTranslator tradeTranslator = new TradeEventTranslator();
-        for (int i = 0; i < LOOP; i++) {
-            disruptor.publishEvent(tradeTranslator);
-        }
-        TimeUnit.SECONDS.sleep(5);
-        logger.info("sleep_5_second over");
-        for (int i = LOOP; i < LOOP + LOOP; i++) {
-            disruptor.publishEvent(tradeTranslator);
-        }
+        executor.submit(new TradePublisher(latch, disruptor));
 
         latch.await();//等待生产者完事. 
 

@@ -4,7 +4,6 @@ import com.lmax.disruptor.EventHandler;
 import com.lmax.disruptor.EventTranslator;
 import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.dsl.Disruptor;
-import util.PrintThread;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -35,12 +34,12 @@ public class DisruptorTest {
         Producer producer = new Producer();
         for (int i = 0; i < 10; i++) {
             ringBuffer.publishEvent(producer);
-            System.out.println("produce:" + i + PrintThread.threadAbout());
+
         }
 
         for (int i = 10; i < 20; i++) {
             ringBuffer.publishEvent(producer);
-            System.out.println("produce:" + i + PrintThread.threadAbout());
+
         }
     }
 

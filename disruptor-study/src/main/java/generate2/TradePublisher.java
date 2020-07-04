@@ -3,16 +3,24 @@ package generate2;
 import com.lmax.disruptor.EventTranslator;
 import com.lmax.disruptor.dsl.Disruptor;
 import generate1.Trade;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.Random;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicLong;
 
+/**
+ * @author
+ */
 public class TradePublisher implements Runnable {
+
+    public static final Logger logger = LoggerFactory.getLogger(TradePublisher.class);
+    public static AtomicLong count = new AtomicLong();
 
     Disruptor<Trade> disruptor;
     private CountDownLatch latch;
 
-    private static int LOOP = 10;//模拟百万次交易的发生
+    private static int LOOP = 10;
 
     public TradePublisher(CountDownLatch latch, Disruptor<Trade> disruptor) {
         this.disruptor = disruptor;
@@ -24,24 +32,24 @@ public class TradePublisher implements Runnable {
         TradeEventTranslator tradeTranslator = new TradeEventTranslator();
         for (int i = 0; i < LOOP; i++) {
             disruptor.publishEvent(tradeTranslator);
+            logger.info("success_publish_event.");
         }
         latch.countDown();
-        System.out.println("publish over.");
     }
 
 }
 
 class TradeEventTranslator implements EventTranslator<Trade> {
 
-    private Random random = new Random();
-
     @Override
     public void translateTo(Trade event, long sequence) {
-        this.generateTrade(event);
+        this.generateTrade();
     }
 
-    private Trade generateTrade(Trade trade) {
-        trade.setPrice(random.nextDouble() * 9999);
+    private Trade generateTrade() {
+
+        Trade trade = new Trade();
+        trade.setId(String.valueOf(TradePublisher.count.getAndAdd(1)));
         return trade;
     }
 

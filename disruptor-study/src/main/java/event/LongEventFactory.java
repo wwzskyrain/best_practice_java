@@ -1,9 +1,10 @@
-package base;
+package event;
 
 import com.lmax.disruptor.EventFactory;
+import event.LongEvent;
 
 /**
- * 需要让disruptor为我们创建事件，我们同时还声明了一个EventFactory来实例化Event对象。
+ * @author
  */
 
 public class LongEventFactory implements EventFactory {

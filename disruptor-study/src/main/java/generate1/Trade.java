@@ -3,10 +3,11 @@ package generate1;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Trade {  
-	
-	private String id;//ID  
+
+
+	private String id;
 	private String name;
-	private double price;//金额  
+	private double price;
 	private AtomicInteger count = new AtomicInteger(0);
 	
 	public String getId() {
@@ -32,7 +33,15 @@ public class Trade {
 	}
 	public void setCount(AtomicInteger count) {
 		this.count = count;
-	} 
-	  
-	  
-}  
+	}
+
+	@Override
+	public String toString() {
+		return "Trade{" +
+				"id='" + id + '\'' +
+				", name='" + name + '\'' +
+				", price=" + price +
+				", count=" + count +
+				'}';
+	}
+}

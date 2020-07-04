@@ -1,6 +1,7 @@
 package base;
 
 import com.lmax.disruptor.RingBuffer;
+import event.LongEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,20 +1,17 @@
 package generate2;
 
 import com.lmax.disruptor.EventHandler;
-import com.lmax.disruptor.WorkHandler;
 import generate1.Trade;
-import util.PrintThread;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class Handler5 implements EventHandler<Trade>, WorkHandler<Trade> {
+public class Handler5 implements EventHandler<Trade> {
+
+    private static final Logger logger = LoggerFactory.getLogger(Handler5.class);
 
     @Override
     public void onEvent(Trade event, long sequence, boolean endOfBatch) throws Exception {
-        this.onEvent(event);
+        logger.info("handler5: endOfBatch:{}, sequence:{}, event:{}", endOfBatch, sequence, event);
     }
 
-    @Override
-    public void onEvent(Trade event) throws Exception {
-        System.out.println("handler5: get price : " + event.getPrice() + PrintThread.threadAbout());
-        event.setPrice(event.getPrice() + 3.0);
-    }
 }  

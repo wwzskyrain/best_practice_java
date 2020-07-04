@@ -1,22 +1,22 @@
 package generate2;
 
 import com.lmax.disruptor.EventHandler;
-import com.lmax.disruptor.WorkHandler;
 import generate1.Trade;
-import util.PrintThread;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class Handler1 implements EventHandler<Trade>, WorkHandler<Trade> {
+public class Handler1 implements EventHandler<Trade> {
+
+    private static final Logger logger = LoggerFactory.getLogger(Handler1.class);
+
 
     @Override
     public void onEvent(Trade event, long sequence, boolean endOfBatch) throws Exception {
-        this.onEvent(event);
+        event.setName("h1");
+        logger.info("set_name:{}", event);
     }
 
-    @Override
     public void onEvent(Trade event) throws Exception {
 
-        System.out.println("handler1: set name, " + PrintThread.threadAbout());
-        event.setName("h1");
-        Thread.sleep(1000);
     }
 }  
