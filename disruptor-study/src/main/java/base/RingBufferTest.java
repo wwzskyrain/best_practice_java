@@ -6,6 +6,7 @@ import com.lmax.disruptor.SequenceBarrier;
 import com.lmax.disruptor.YieldingWaitStrategy;
 import generate1.Trade;
 import generate1.TradeHandler;
+import org.junit.Test;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -17,10 +18,12 @@ import java.util.concurrent.Future;
  * 1.创建RingBuffer
  * 2.构造EventProcessor并提交给线程池
  * 3.生产者发布事件
+ * 4.完事后关闭线程池
  */
-public class Demo1RingBufferUsage {
+public class RingBufferTest {
 
-    public static void main(String[] args) throws Exception {
+    @Test
+    public void test_ring_buffer_basic_usage() throws Exception {
 
         int bufferSize = 1024;
         int threadNumber = 4;

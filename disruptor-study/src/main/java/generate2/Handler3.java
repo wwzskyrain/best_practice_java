@@ -4,7 +4,6 @@ import com.lmax.disruptor.EventHandler;
 import generate1.Trade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import util.PrintThread;
 
 import java.util.concurrent.TimeUnit;
 

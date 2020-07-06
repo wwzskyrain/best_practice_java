@@ -5,12 +5,30 @@
 
 ![RingBuffer用法架构图-基本版](../../../../Users/nali/Documents/markdown/image/147850274808768.png)
 
+2.  演示代码[RingBuffer基本用法](base.RingBufferTest)
+    1.  构建RingBuffer：
+        1.  以RingBuffer构造一个Sequencer
+        2.  申请RingBuffer数据并填充事件
+        ```JAVA
+        RingBufferFields(
+            EventFactory<E> eventFactory,
+            Sequencer sequencer)
+        {
+            this.sequencer = sequencer;
+            ...
+            this.entries = new Object[sequencer.getBufferSize() + 2 * BUFFER_PAD];
+            fill(eventFactory);
+        }
+        ```
+    2.  构造EventProcessor：每一个EventProcessor都
+
 
 10. ​	RingBuffer已经被Disruptor包装了，所以，从使用的角度来看，可以不用学习了。
 
 ## 1.2 Disruptor的基本用法
 
-​	
+1.  再看一张比较全面的RingBuffer工作流程图
+![](../../../../Users/nali/Documents/markdown/image/171107746295650.png)
 
 ```java
 //      1.  构造disruptor：提供事件Factory，buffer_size，ThreadFactory，ProducerType，WaitStrategy
@@ -39,17 +57,107 @@
 ```
 
 
+## 1.3 事件处理
+1.  EventHandler会被包装成一个BatchEventProcessor，该Processor按照自己的sequence(按照自然数序列)逐个
+    向SequenceBarrier请求可用的sequence，请求可能需要等待，直到请求到返回；请求到之后，回调'事件处理函数'onEvent.
+    然后设置自己的sequence。
+2.  代码演示：
+3.  实现分析：多个EventProcessor挂到同一个'Sequencer'，每一个EventProcessor都有自己的消费序列。
+    看一下BatchEventProcessor的processEvents()就可以了；PS：BatchEventProcessor的run方法就委托给了该方法
+    ```text
+    private void processEvents()
+    {   //很重要的一个方法
+        T event = null;
+        long nextSequence = sequence.get() + 1L;
 
-## 1.3 拓扑用法
+        while (true)
+        {
+            try
+            {   //请求下一个可用序列，可能会被阻塞
+                final long availableSequence = sequenceBarrier.waitFor(nextSequence);
+                if (batchStartAware != null)
+                {   //实现BatchStartAware的Handler的回调处
+                    batchStartAware.onBatchStart(availableSequence - nextSequence + 1);
+                }
 
-```java
-appendEventDisruptor
-  .handleEventsWith(new AppendEventHandler1(), new AppendEventHandler2())
-  .handleEventsWith(new AppendEventHandler3())
-  .handleEventsWith(new AppendEventHandler4(), new AppendEventHandler5())
-  .handleEventsWith(new AppendEventHandler6());
-```
+                while (nextSequence <= availableSequence)
+                {   //去RingBuffer取指定Sequence的事件Event
+                    event = dataProvider.get(nextSequence);
+                    //回调事件处理函数
+                    eventHandler.onEvent(event, nextSequence, nextSequence == availableSequence);
+                    nextSequence++;
+                }
+                // 释放当前的Sequence，会被后继的SequenceBarrier看到
+                sequence.set(availableSequence);
+            }
+            
+        }
+    }
+    ```
+## 1.4 广播消费：
 
+
+## 1.5 多线程消费
+1.  代码演示
+2.  实现分析：多个Handler共用一个workSequence，并且cas后去下一个workSequence，然后waitFor(workSequence)
+    ```
+    public void run()
+    {       //WorkProcessor.java
+        
+                ...
+                if (processedSequence)
+                {
+                    processedSequence = false;
+                    do{     //cas获取下一个可用的workSequence.
+                        nextSequence = workSequence.get() + 1L;
+                        sequence.set(nextSequence - 1L);
+                    }
+                    while (!workSequence.compareAndSet(nextSequence - 1L, nextSequence));
+                }
+
+                if (cachedAvailableSequence >= nextSequence){
+                //  nextSequence已经可以处理
+                    event = ringBuffer.get(nextSequence);
+                    workHandler.onEvent(event);
+                    processedSequence = true;
+                } else { //等一会前驱
+                    cachedAvailableSequence = sequenceBarrier.waitFor(nextSequence);
+                }
+            }
+            ...
+    }
+    ```
+
+## 1.6 阻塞生产者 
+1.  代码演示
+2.  当生产者快于最后一个消费者一圈的时候，生产者再去请求下一个可用的序列时nextSequence，就会阻塞
+3.  实现分析：当下一个sequence-bufferSize还大于最小的消费过的序列时，就park请求线程
+    ```
+    public long next(int n)
+    {
+       
+        long nextValue = this.nextValue;
+
+        long nextSequence = nextValue + n;
+        long wrapPoint = nextSequence - bufferSize;
+        long cachedGatingSequence = this.cachedValue;
+
+        if (wrapPoint > cachedGatingSequence || cachedGatingSequence > nextValue)
+        {
+            cursor.setVolatile(nextValue);  // StoreLoad fence
+              
+            long minSequence;
+            while (wrapPoint > (minSequence = Util.getMinimumSequence(gatingSequences, nextValue))){
+            //  当下一个可用的point大于最小的消费过的序列时，就park
+                LockSupport.parkNanos(1L); // TODO: Use waitStrategy to spin?
+            }
+            this.cachedValue = minSequence;
+        }
+        this.nextValue = nextSequence;
+
+        return nextSequence;
+    }
+    ```
 
 
 # 2.原理分析和代码解读
@@ -246,3 +354,5 @@ appendEventDisruptor
    1. [[老李读disruptor源码](https://www.jianshu.com/nb/16218289)]
 
    2. [[Mechanical Sympathy](https://mechanical-sympathy.blogspot.com/])]
+   
+   3. [disruptor工作结构图](https://www.processon.com/diagraming/5f028f3e6376891e81fd56b7)

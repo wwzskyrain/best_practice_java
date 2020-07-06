@@ -12,5 +12,6 @@ public class AppendEventHandler3 implements EventHandler<AppendEvent> {
     @Override
     public void onEvent(AppendEvent event, long sequence, boolean endOfBatch) throws Exception {
         event.handleMe(AppendEventHandler3.class);
+        System.out.println(event);
     }
 }

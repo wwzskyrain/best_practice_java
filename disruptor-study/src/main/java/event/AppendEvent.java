@@ -11,6 +11,20 @@ public class AppendEvent {
 
     private String track = AppendEvent.class.getSimpleName();
 
+    private Integer id ;
+
+    public AppendEvent() {
+    }
+
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
     /**
      * 不加synchronize关键字的话，赋值track会被覆盖
      *
