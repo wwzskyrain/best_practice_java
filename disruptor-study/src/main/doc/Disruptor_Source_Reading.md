@@ -1,8 +1,12 @@
 # 1.编程API
 
 ## 1.1 RingBuffer的基本用法
+1.  RingBuffer用法架构图-基本版
 
-1. ​	RingBuffer已经被Disruptor包装了，所以，从使用的角度来看，可以不用学习了。
+![RingBuffer用法架构图-基本版](../../../../Users/nali/Documents/markdown/image/147850274808768.png)
+
+
+10. ​	RingBuffer已经被Disruptor包装了，所以，从使用的角度来看，可以不用学习了。
 
 ## 1.2 Disruptor的基本用法
 
@@ -85,7 +89,11 @@ appendEventDisruptor
               }
       ```
 
-      
+
+
+
+
+
 
 ### 2. Sequence：传递数据vs传递数据位置
 
