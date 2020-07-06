@@ -1,6 +1,7 @@
 package base;
 
 import base.handler.*;
+import com.google.common.primitives.Ints;
 import com.lmax.disruptor.*;
 import com.lmax.disruptor.dsl.Disruptor;
 import com.lmax.disruptor.dsl.ProducerType;
@@ -60,7 +61,7 @@ public class Demo2DisruptorUsageTest {
     }
 
     @Test
-    public void test_multi_consumer_with_broadcast() throws InterruptedException {
+    public void test_multi_consumer_with_broadcast() {
 
         Disruptor<AppendEvent> appendEventDisruptor = new Disruptor<>(
                 AppendEvent::new,
@@ -73,11 +74,13 @@ public class Demo2DisruptorUsageTest {
             event.setId(atomicInteger.getAndIncrement());
         };
 
+        appendEventDisruptor.handleEventsWith(new AppendEventHandlerPrintId(), new AppendEventHandlerPrintId(), new AppendEventHandlerPrintId());
+        appendEventDisruptor.start();
+
         AtomicInteger atomicInteger = new AtomicInteger(1);
-        for (int i = 0; i < 10; i++) {
-            appendEventDisruptor.publishEvent(translatorOneArg, atomicInteger);
-            TimeUnit.MILLISECONDS.sleep(500);
-        }
+        IntStream.range(0, 10).forEach(id -> appendEventDisruptor.publishEvent(translatorOneArg, atomicInteger));
+
+        sleepSomeMilliSecond(5000);
         appendEventDisruptor.shutdown();
     }
 
