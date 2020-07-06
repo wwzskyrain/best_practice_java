@@ -16,10 +16,6 @@ import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @author erik.wang
- * Disruptor 的基本用法
- * 1ß.创建RingBuffer
- * 2.构造EventProcessor并提交给线程池
- * 3.生产者发布事件
  */
 public class Demo2DisruptorUsageTest {
 
