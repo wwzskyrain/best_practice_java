@@ -193,7 +193,7 @@
     }
     ```
 
-1.7 消费拓扑
+## 1.7 消费拓扑
 1.  用disruptor可以很方便的创建拓扑结构的消费流。
 2.  代码演示：
     ```text
@@ -211,7 +211,7 @@
     3.  结合'广播消费'和'线性依赖'就能构件任意的有向无环图拓扑。
     4.  具体实现代码可见createEventProcessors()，其中会创建SequenceBarrier和EventProcessor。
 
-# 2.原理分析和代码解读
+# 2.原理分析
 
 ## 2.1 工作方式分析
 
@@ -306,15 +306,15 @@
 
 ### 1.伪共享和缓存行填充
 
-1. [剖析Disruptor:为什么会这么快？（二）神奇的缓存行填充]: http://ifeve.com/disruptor-cacheline-padding
+1. [剖析Disruptor:为什么会这么快？（二）神奇的缓存行填充](http://ifeve.com/disruptor-cacheline-padding)
 
-2. [剖析Disruptor:为什么会这么快？(三)揭秘内存屏障]: http://ifeve.com/disruptor-memory-barrier/
+2. [剖析Disruptor:为什么会这么快？(三)揭秘内存屏障](http://ifeve.com/disruptor-memory-barrier/)
 
     
 
 ### 2.无锁设计
 
-1. [The Disruptor – Lock-free publishing]: http://blog.codeaholics.org/2011/the-disruptor-lock-free-publishing/
+1. [The Disruptor – Lock-free publishing](http://blog.codeaholics.org/2011/the-disruptor-lock-free-publishing/)
 
    
 ## 2.3 具体问题分析
