@@ -5,7 +5,7 @@
 
 ![RingBuffer用法架构图-基本版](../../../../Users/nali/Documents/markdown/image/147850274808768.png)
 
-2.  演示代码[RingBuffer基本用法](base.RingBufferTest)
+2.  演示代码[RingBuffer基本用法](../java/base/RingBufferTest.java)
     1.  构建RingBuffer：
         1.  以RingBuffer构造一个Sequencer
         2.  申请RingBuffer数据并填充事件
