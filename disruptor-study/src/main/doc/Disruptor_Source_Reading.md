@@ -27,8 +27,10 @@
 ## 1.2 Disruptor的基本用法
 
 1.  再看一张比较全面的RingBuffer工作流程图
+
 ![](../../../../Users/nali/Documents/markdown/image/181399961627496.png)
 
+2.  [看一下基本用法代码](../java/base/DisruptorUsageTest.java)
 ```
 //      1.  构造disruptor：提供事件Factory，buffer_size，ThreadFactory，ProducerType，WaitStrategy
         Disruptor<LongEvent> disruptor =

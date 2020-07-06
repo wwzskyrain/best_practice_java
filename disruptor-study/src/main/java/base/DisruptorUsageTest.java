@@ -1,7 +1,6 @@
 package base;
 
 import base.handler.*;
-import com.google.common.primitives.Ints;
 import com.lmax.disruptor.*;
 import com.lmax.disruptor.dsl.Disruptor;
 import com.lmax.disruptor.dsl.ProducerType;
@@ -22,9 +21,9 @@ import java.util.stream.IntStream;
 /**
  * @author erik.wang
  */
-public class Demo2DisruptorUsageTest {
+public class DisruptorUsageTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(Demo2DisruptorUsageTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(DisruptorUsageTest.class);
 
     public static class DisruptorUsageThreadFactory implements ThreadFactory {
         private static AtomicLong count = new AtomicLong();
