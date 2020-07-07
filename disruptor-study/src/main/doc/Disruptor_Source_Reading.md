@@ -3,7 +3,7 @@
 ## 1.1 RingBuffer的基本用法
 1.  RingBuffer用法架构图-基本版
 
-![RingBuffer用法架构图-基本版](../../../../Users/nali/Documents/markdown/image/181355684086234.png)
+![RingBuffer用法架构图-基本版](../../../../image/181355684086234.png)
 
 2.  演示代码[RingBuffer基本用法](../java/base/RingBufferTest.java)
     1.  构建RingBuffer：
@@ -28,7 +28,7 @@
 
 1.  再看一张比较全面的RingBuffer工作流程图
 
-![](../../../../Users/nali/Documents/markdown/image/181399961627496.png)
+![](../../../../image/181399961627496.png)
 
 2.  [看一下基本用法代码](../java/base/DisruptorUsageTest.java)
 ```
