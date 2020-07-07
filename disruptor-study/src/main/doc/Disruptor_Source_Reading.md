@@ -62,7 +62,7 @@
 1.  事件处理流程：EventHandler会被包装成一个BatchEventProcessor，该Processor按照自己的sequence(按照自然数序列)逐个
     向SequenceBarrier请求可用的sequence，请求可能需要等待，直到请求到返回；请求到之后，回调'事件处理函数'onEvent.
     然后设置自己的sequence。
-2.  代码演示：
+2.  [代码演示：](../java/base/DisruptorUsageTest.java)
 3.  实现代码分析：BatchEventProcessor的run方法是调用processEvents()实现的
     ```text
     private void processEvents()
@@ -100,7 +100,7 @@
     1.  多个EventProcessor的具有相同的SequenceBarrier，即具有相同的依赖序列'dependencySequences'——结合等待策略的waitFor函数看.
     2.  每个EventProcessor有自己的Sequence.
 
-2.  代码演示：
+2.  [代码演示：](../java/base/DisruptorUsageTest.java)
 
 3.  代码实现分析：
     ```
@@ -132,7 +132,7 @@
 1.  当预估了事件流量比较大时，就需要开启Handler的多线程模式。ps：我还没有找的线程池模式。
     其实现思路是：同一个Handler的多个对象对可消费序列进行cas式请求，请求成功后执行事件处理函数，请求失败的则继续cas请求
     ps：这是jdk的队列没有提供的一种功能，当然，我们也可以自造轮子。
-2.  代码演示
+2.  [代码演示：](../java/base/DisruptorUsageTest.java)
 3.  实现分析：多个Handler共用一个workSequence，并且cas后取下一个workSequence，然后waitFor(workSequence)
     ```
     public void run()
@@ -164,7 +164,7 @@
 
 ## 1.6 阻塞生产者
 1.  当生产者快于最后一个消费者一圈的时候，生产者再去请求下一个可用的序列时nextSequence，就会阻塞。
-2.  代码演示  
+2.  [代码演示：](../java/base/DisruptorUsageTest.java)  
 3.  实现分析：当下一个sequence-bufferSize还大于最小的消费过的序列时，就park请求线程
     ```
     public long next(int n)
@@ -193,9 +193,79 @@
     }
     ```
 
-## 1.7 消费拓扑
+## 1.7 多生产者
+1.  多个生产者(在多个线程中运行)可以无锁式并发的往RingBuffer中发布事件；它们用cas的方式请求下一个可用序列，
+    然后往请求的序列出发布事件。
+
+2.  [代码演示：](../java/base/DisruptorUsageTest.java#test_multi_produce())
+3.  实现代码：
+    ```
+        public long next(int n)
+    {   //多生产者模式下，申请n个序列
+        do
+        {
+            current = cursor.get();
+            next = current + n;
+            long wrapPoint = next - bufferSize;
+            long cachedGatingSequence = gatingSequenceCache.get();
+
+            if (wrapPoint > cachedGatingSequence || cachedGatingSequence > current)
+            {   //如果请求的序列大于最慢的消费者一圈(两者的sequence的比较)，则要阻塞生产者
+                long gatingSequence = Util.getMinimumSequence(gatingSequences, current);
+
+                if (wrapPoint > gatingSequence)
+                {
+                    LockSupport.parkNanos(1); // TODO, should we spin based on the wait strategy?
+                    continue;
+                }
+
+                gatingSequenceCache.set(gatingSequence);
+            } //'cas + while'的 方式获取序列
+            else if (cursor.compareAndSet(current, next))
+            {
+                break;
+            }
+        }
+        while (true);
+
+        return next;
+    }
+    // 对比 单生产模式 下的next(n)
+    
+    public long next(int n)
+    {
+       
+        long nextValue = this.nextValue;
+
+        long nextSequence = nextValue + n; //申请n个序列
+        long wrapPoint = nextSequence - bufferSize;
+        long cachedGatingSequence = this.cachedValue;
+
+        if (wrapPoint > cachedGatingSequence || cachedGatingSequence > nextValue)
+        {
+            cursor.setVolatile(nextValue);  // StoreLoad fence
+
+            long minSequence;
+            while (wrapPoint > (minSequence = Util.getMinimumSequence(gatingSequences, nextValue)))
+            {   //如果申请的序列大于最慢消费者一圈，park申请线程1纳秒。下面的行注释是原文注释，可见有可能该park为自旋
+                LockSupport.parkNanos(1L); // TODO: Use waitStrategy to spin?
+            }
+            this.cachedValue = minSequence;
+        }
+        this.nextValue = nextSequence; //（非cas的方式）直接设置新的nextValue，因为没有并发竞争。
+
+        return nextSequence;
+    }
+    
+    ```
+
+4.  注意事项：
+    1.  单生产者模式时，需要用户自觉的使用单线程来生产/发布事件；Disruptor并没有做限制；这一点待实践验证
+ 
+
+## 1.8 消费拓扑
 1.  用disruptor可以很方便的创建拓扑结构的消费流。
-2.  代码演示：
+2.  [代码演示：](../java/base/DisruptorUsageTest.java)
     ```text
     //构建拓扑-两个串行的菱形
     appendEventDisruptor
@@ -210,6 +280,8 @@
     2.  多个EventProcessor共享SequenceBarrier就可以实现广播消费。
     3.  结合'广播消费'和'线性依赖'就能构件任意的有向无环图拓扑。
     4.  具体实现代码可见createEventProcessors()，其中会创建SequenceBarrier和EventProcessor。
+
+
 
 # 2.原理分析
 

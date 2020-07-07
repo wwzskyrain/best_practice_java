@@ -116,7 +116,7 @@ public class RateLimiterTest {
     }
 
     /**
-     * 测试再多线程下的赊账模型：前面线程舍得账，需要后面的请求者来等待。
+     * 测试再多线程下的赊账模型：前面线程赊得账，需要后面的请求者来等待。
      */
     @Test
     public void test_accumulate_wait_time() {
@@ -125,7 +125,7 @@ public class RateLimiterTest {
 
         Executor executor = new ThreadPoolExecutor(10, 10, 100, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(20));
         for (int i = 0; i < 5; i++) {
-            executor.execute(new RequestToken(r, 4));
+            executor.execute(new RequestToken(r, i + 1));
         }
 
         try {
