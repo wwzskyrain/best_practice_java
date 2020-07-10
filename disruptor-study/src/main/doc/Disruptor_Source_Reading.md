@@ -60,9 +60,9 @@
 
 ## 1.3 事件处理
 1.  事件处理流程：EventHandler会被包装成一个BatchEventProcessor，该Processor按照自己的sequence(按照自然数序列)逐个
-    向SequenceBarrier请求可用的sequence，请求可能需要等待，直到请求到返回；请求到之后，回调'事件处理函数'onEvent.
-    然后设置自己的sequence。
-2.  [代码演示：](../java/base/DisruptorUsageTest.java)
+    向SequenceBarrier请求可用的sequence，请求可能需要等待，直到可用的sequence大于等于请求sequence；返回后，回调'事件处理函数'onEvent.
+    然后增大自己刚处理的sequence。
+2.  [代码演示：](../java/erik/study/disruptorDisruptorUsageTest.java)
 3.  实现代码分析：BatchEventProcessor的run方法是调用processEvents()实现的
     ```text
     private void processEvents()
@@ -95,12 +95,15 @@
     }
     ```
 ## 1.4 广播消费：
-1.  广播消费：当多个handler都对订阅了某个事件后，该事件流就会以广播的形式被多是EventHandler分别消费。
-    其实现原理也很简单：
-    1.  多个EventProcessor的具有相同的SequenceBarrier，即具有相同的依赖序列'dependencySequences'——结合等待策略的waitFor函数看.
+1.  广播消费：当多个handler都订阅了某个事件后，该事件就会以广播的形式被多个EventHandler分别消费。
+
+    ps：这是jdk的队列没有提供的一种功能，当然，我们也可以自造轮子。
+    
+    其实现原理：
+    1.  多个EventProcessor具有相同的SequenceBarrier，即具有相同的依赖序列'dependencySequences'——结合等待策略的waitFor函数看.
     2.  每个EventProcessor有自己的Sequence.
 
-2.  [代码演示：](../java/base/DisruptorUsageTest.java)
+2.  [代码演示：](../java/erik/study/disruptorDisruptorUsageTest.java)
 
 3.  代码实现分析：
     ```
@@ -118,7 +121,7 @@
             // 1.有共同的SequenceBarrier，即有共同的依赖序列
             final BatchEventProcessor<T> batchEventProcessor =
                 new BatchEventProcessor<>(ringBuffer, barrier, eventHandler);
-            // 2.BatchEventProcessor中又有各自的Sequence，下文会有BatchEventProcessor字段说明。
+            // 2.BatchEventProcessor有自己的Sequence，下文会有BatchEventProcessor字段说明。
             ...
         }
         
@@ -129,10 +132,10 @@
 
 
 ## 1.5 多线程消费
-1.  当预估了事件流量比较大时，就需要开启Handler的多线程模式。ps：我还没有找的线程池模式。
+1.  当预估了事件流量比较大时，就需要开启Handler的多线程模式。
     其实现思路是：同一个Handler的多个对象对可消费序列进行cas式请求，请求成功后执行事件处理函数，请求失败的则继续cas请求
-    ps：这是jdk的队列没有提供的一种功能，当然，我们也可以自造轮子。
-2.  [代码演示：](../java/base/DisruptorUsageTest.java)
+    
+2.  [代码演示：](../java/erik/study/disruptorDisruptorUsageTest.java)
 3.  实现分析：多个Handler共用一个workSequence，并且cas后取下一个workSequence，然后waitFor(workSequence)
     ```
     public void run()
@@ -164,7 +167,7 @@
 
 ## 1.6 阻塞生产者
 1.  当生产者快于最后一个消费者一圈的时候，生产者再去请求下一个可用的序列时nextSequence，就会阻塞。
-2.  [代码演示：](../java/base/DisruptorUsageTest.java)  
+2.  [代码演示：](../java/erik/study/disruptorDisruptorUsageTest.java)  
 3.  实现分析：当下一个sequence-bufferSize还大于最小的消费过的序列时，就park请求线程
     ```
     public long next(int n)
@@ -195,9 +198,9 @@
 
 ## 1.7 多生产者
 1.  多个生产者(在多个线程中运行)可以无锁式并发的往RingBuffer中发布事件；它们用cas的方式请求下一个可用序列，
-    然后往请求的序列出发布事件。
+    然后往请求的序列处发布事件。
 
-2.  [代码演示：](../java/base/DisruptorUsageTest.java#test_multi_produce())
+2.  [代码演示：](../java/erik/study/disruptorDisruptorUsageTest.java#test_multi_produce())
 3.  实现代码：
     ```
         public long next(int n)
@@ -265,7 +268,7 @@
 
 ## 1.8 消费拓扑
 1.  用disruptor可以很方便的创建拓扑结构的消费流。
-2.  [代码演示：](../java/base/DisruptorUsageTest.java)
+2.  [代码演示：](../java/erik/study/disruptorDisruptorUsageTest.java)
     ```text
     //构建拓扑-两个串行的菱形
     appendEventDisruptor
@@ -292,6 +295,7 @@
 1. 每一个Handler都会被包装成一个EventProcessor。
 2. 重要成员变量
     ```
+    // BatchEventProcessor.java
     private final DataProvider<T> dataProvider;	//ringBuffer
     private final SequenceBarrier sequenceBarrier;	 //依赖-前驱
     private final EventHandler<? super T> eventHandler; //用户定义的事件处理函数
@@ -299,11 +303,12 @@
     private final BatchStartAware batchStartAware; //批处理接口
     
     ```
-3. EventProcessor的工作方式：
+3. BatchEventProcessor的工作方式：
 
    1. 首先要了解到，它实现了Runnable接口，它运行在独立的线程中的。
 
-   2. 它的最直接的使命就是消费下一个Sequence位置的事件，消费逻辑变是用户定义的EventHandler的onEvent函数，然后更新sequence。
+   2. 它的最直接的使命就是消费下一个Sequence位置的事件，消费逻辑便是用户定义的EventHandler的onEvent函数，然后更新sequence。
+      
       ps：Sequence是一个连续自然数
 
    3. 但是它一般会等待在strategy.waitFor(sequence)上，等待可用的序列。
@@ -311,8 +316,8 @@
 
 ### 2. Sequence：传递数据vs传递数据位置
 
-1.  与BlockQueue的传递数据不同，Disruptor不传递数据，传递数据的位置（sequence就是数据位置），接收者去指定的sequence处取出数据并消费。
-2.	sequence必须是并发安全的。
+1.  与BlockQueue的传递数据不同，Disruptor不传递数据，而是传递数据的位置（sequence就是数据位置），接收者去指定的sequence处取出数据并消费。
+2.	sequence必须是并发安全的。PS：为了提高性能，还做了填充
 
 ### 3. SequenceBarrier：构建偏序关系
 
@@ -324,13 +329,14 @@
     Sequence cursorSequence;		//当前的Sequence，也叫游标，其实是RingBuffer的sequence
     ```
 
-2.  首先在数据层面，可以粗略的将'内存屏障'看做是依赖序列的集合。其次，结合具体的等待策略和cursorSequence，具体控制了依赖该屏障的EventProcessor的等待行为。
+2.  首先在数据层面，可以粗略的将'序列屏障'看做是依赖序列的集合。其次，结合具体的等待策略和cursorSequence，具体控制了依赖该屏障的EventProcessor的等待行为。
 3.  SequenceBarrier结合EventProcessor的workSequence是如何构造拓扑图的？见1.7消费拓扑的实现思路
 
 
  4. SequenceBarrier的waitFor函数：
 
     ```
+    ...
     long availableSequence = waitStrategy.waitFor(sequence, cursorSequence, dependentSequence, this);
     if (availableSequence < sequence){
       //可用序列小于请求队列时，直接返回可用序列
@@ -436,7 +442,12 @@
 5.  如何在SpringBoot中使用Disruptor呢，或者如何实现面向事件编程呢?
 
 
-# 4. 扩展阅读：
+# 4.总结
+1.  本文主要以几个Disruptor的基础使用场景为例，在可运行代码的基础上，结合结构图、源码分析，讲述了Disruptor的实现原理。
+2.  本文没有覆盖全面的Disruptor源码实现，比如Sequence的数据存储和统计，Sequence的字段填充，等。
+3.  本文没有对Disruptor的高性能进行分析，而是直接引用网上帖子；毕竟这篇文章只用于内部分享。
+
+# 5. 扩展阅读：
 
 0.  [LMAX-Exchange/disruptor wiki](https://github.com/LMAX-Exchange/disruptor/wiki)
 1.  [[老李读disruptor源码](https://www.jianshu.com/nb/16218289)]
