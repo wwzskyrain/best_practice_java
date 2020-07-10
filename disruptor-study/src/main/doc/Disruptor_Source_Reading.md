@@ -1,11 +1,11 @@
 # 1.编程API
 
 ## 1.1 RingBuffer的基本用法
-1.  RingBuffer用法架构图-基本版
+1.  RingBuffer组件架构图-基本版
 
-![RingBuffer用法架构图-基本版](../../../../image/181355684086234.png)
+![RingBuffer组件结构-基本版](../../../../image/ring_buffer_component_structure_basic.png)
 
-2.  演示代码[RingBuffer基本用法](../java/base/RingBufferTest.java)
+2.  演示代码[RingBuffer基本用法](../java/erik/study/disruptor/RingBufferTest.java)
     1.  构建RingBuffer：
         1.  以RingBuffer构造一个Sequencer
         2.  申请RingBuffer数据并填充事件
@@ -28,9 +28,9 @@
 
 1.  再看一张比较全面的RingBuffer工作流程图
 
-![](../../../../image/181399961627496.png)
+![](../../../../image/ring_buffer_component_structure_major.png)
 
-2.  [看一下基本用法代码](../java/base/DisruptorUsageTest.java)
+2.  [看一下基本用法代码](../java/erik/study/disruptor/DisruptorUsageTest.java)
 ```
 //      1.  构造disruptor：提供事件Factory，buffer_size，ThreadFactory，ProducerType，WaitStrategy
         Disruptor<LongEvent> disruptor =
