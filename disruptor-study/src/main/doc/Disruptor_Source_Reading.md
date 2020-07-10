@@ -439,9 +439,9 @@
 # 4. 扩展阅读：
 
 0.  [LMAX-Exchange/disruptor wiki](https://github.com/LMAX-Exchange/disruptor/wiki)
-1.   [[老李读disruptor源码](https://www.jianshu.com/nb/16218289)]
-2.   [[Mechanical Sympathy](https://mechanical-sympathy.blogspot.com/])]
-3.   [disruptor工作结构图](https://www.processon.com/diagraming/5f028f3e6376891e81fd56b7)
-4.   [领域驱动设计(DDD) 领域事件](https://zhuanlan.zhihu.com/p/41115251)
-5.   [到底什么是事件驱动架构EDA](https://www.jdon.com/49113)
+1.  [[老李读disruptor源码](https://www.jianshu.com/nb/16218289)]
+2.  [[Mechanical Sympathy](https://mechanical-sympathy.blogspot.com/])]
+3.  [disruptor工作结构图](https://www.processon.com/diagraming/5f028f3e6376891e81fd56b7)
+4.  [领域驱动设计(DDD) 领域事件](https://zhuanlan.zhihu.com/p/41115251)
+5.  [到底什么是事件驱动架构EDA](https://www.jdon.com/49113)
    
