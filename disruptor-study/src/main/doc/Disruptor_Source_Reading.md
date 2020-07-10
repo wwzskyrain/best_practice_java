@@ -455,4 +455,5 @@
 3.  [disruptor工作结构图](https://www.processon.com/diagraming/5f028f3e6376891e81fd56b7)
 4.  [领域驱动设计(DDD) 领域事件](https://zhuanlan.zhihu.com/p/41115251)
 5.  [到底什么是事件驱动架构EDA](https://www.jdon.com/49113)
+6.  实现一个基于Disruptor的面向事件编程框架。
    
