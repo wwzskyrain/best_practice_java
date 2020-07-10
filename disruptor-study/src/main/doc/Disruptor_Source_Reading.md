@@ -62,7 +62,7 @@
 1.  事件处理流程：EventHandler会被包装成一个BatchEventProcessor，该Processor按照自己的sequence(按照自然数序列)逐个
     向SequenceBarrier请求可用的sequence，请求可能需要等待，直到可用的sequence大于等于请求sequence；返回后，回调'事件处理函数'onEvent.
     然后增大自己刚处理的sequence。
-2.  [代码演示：](../java/erik/study/disruptorDisruptorUsageTest.java)
+2.  [代码演示：](../java/erik/study/disruptor/disruptorDisruptorUsageTest.java)
 3.  实现代码分析：BatchEventProcessor的run方法是调用processEvents()实现的
     ```text
     private void processEvents()
@@ -103,7 +103,7 @@
     1.  多个EventProcessor具有相同的SequenceBarrier，即具有相同的依赖序列'dependencySequences'——结合等待策略的waitFor函数看.
     2.  每个EventProcessor有自己的Sequence.
 
-2.  [代码演示：](../java/erik/study/disruptorDisruptorUsageTest.java)
+2.  [代码演示：](../java/erik/study/disruptor/disruptorDisruptorUsageTest.java)
 
 3.  代码实现分析：
     ```
@@ -135,7 +135,7 @@
 1.  当预估了事件流量比较大时，就需要开启Handler的多线程模式。
     其实现思路是：同一个Handler的多个对象对可消费序列进行cas式请求，请求成功后执行事件处理函数，请求失败的则继续cas请求
     
-2.  [代码演示：](../java/erik/study/disruptorDisruptorUsageTest.java)
+2.  [代码演示：](../java/erik/study/disruptor/disruptorDisruptorUsageTest.java)
 3.  实现分析：多个Handler共用一个workSequence，并且cas后取下一个workSequence，然后waitFor(workSequence)
     ```
     public void run()
@@ -167,7 +167,7 @@
 
 ## 1.6 阻塞生产者
 1.  当生产者快于最后一个消费者一圈的时候，生产者再去请求下一个可用的序列时nextSequence，就会阻塞。
-2.  [代码演示：](../java/erik/study/disruptorDisruptorUsageTest.java)  
+2.  [代码演示：](../java/erik/study/disruptor/disruptorDisruptorUsageTest.java)  
 3.  实现分析：当下一个sequence-bufferSize还大于最小的消费过的序列时，就park请求线程
     ```
     public long next(int n)
@@ -200,7 +200,7 @@
 1.  多个生产者(在多个线程中运行)可以无锁式并发的往RingBuffer中发布事件；它们用cas的方式请求下一个可用序列，
     然后往请求的序列处发布事件。
 
-2.  [代码演示：](../java/erik/study/disruptorDisruptorUsageTest.java#test_multi_produce())
+2.  [代码演示：](../java/erik/study/disruptor/disruptorDisruptorUsageTest.java#test_multi_produce())
 3.  实现代码：
     ```
         public long next(int n)
@@ -268,7 +268,7 @@
 
 ## 1.8 消费拓扑
 1.  用disruptor可以很方便的创建拓扑结构的消费流。
-2.  [代码演示：](../java/erik/study/disruptorDisruptorUsageTest.java)
+2.  [代码演示：](../java/erik/study/disruptor/disruptorDisruptorUsageTest.java)
     ```text
     //构建拓扑-两个串行的菱形
     appendEventDisruptor
