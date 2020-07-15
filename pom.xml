@@ -15,6 +15,7 @@
         <module>guava-study</module>
         <module>disruptor-study</module>
         <module>aggregate-framework-study</module>
+        <module>data-security</module>
     </modules>
 
     <properties>
