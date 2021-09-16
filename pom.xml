@@ -18,6 +18,7 @@
         <module>data-security</module>
         <module>hystrix-study</module>
         <module>c3p0-study</module>
+	    <module>jdk15-study</module>
     </modules>
 
     <properties>
