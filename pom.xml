@@ -14,11 +14,8 @@
         <module>rabbitmq-study</module>
         <module>guava-study</module>
         <module>disruptor-study</module>
-        <module>aggregate-framework-study</module>
-        <module>data-security</module>
-        <module>hystrix-study</module>
-        <module>c3p0-study</module>
-	    <module>jdk15-study</module>
+        <module>jdk15-study</module>
+	    <module>elasticsearch-study</module>
     </modules>
 
     <properties>
