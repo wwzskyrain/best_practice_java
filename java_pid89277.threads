@@ -1,0 +1,103 @@
+Thread 0x7ff0f3d80
+
+  locals:
+
+Thread 0x7ff0f3688
+  at java.lang.OutOfMemoryError.<init>()V (OutOfMemoryError.java:48)
+  at java.util.Arrays.copyOf([Ljava/lang/Object;ILjava/lang/Class;)[Ljava/lang/Object; (Arrays.java:3720)
+  at java.util.Arrays.copyOf([Ljava/lang/Object;I)[Ljava/lang/Object; (Arrays.java:3689)
+  at java.util.ArrayList.grow(I)[Ljava/lang/Object; (ArrayList.java:238)
+  at java.util.ArrayList.grow()[Ljava/lang/Object; (ArrayList.java:243)
+  at java.util.ArrayList.add(Ljava/lang/Object;[Ljava/lang/Object;I)V (ArrayList.java:486)
+  at java.util.ArrayList.add(Ljava/lang/Object;)Z (ArrayList.java:499)
+  at study.yueyi.jvm.HeapOOM.main([Ljava/lang/String;)V (HeapOOM.java:24)
+
+  locals:
+    objectId=0x7ffc00000, line=1
+    objectId=0x7ff0f31b8, line=1
+    objectId=0x7ffc00000, line=2
+    objectId=0x7ff0f32b0, line=3
+    objectId=0x7ff0f32b0, line=3
+    objectId=0x7ff0f32b0, line=4
+    objectId=0x7ff0f32b0, line=5
+    objectId=0x7ff867960, line=5
+    objectId=0x7ff0f32b0, line=7
+
+Thread 0x7ff0f4728
+  at java.net.SocketInputStream.socketRead0(Ljava/io/FileDescriptor;[BIII)I (Native Method)
+  at java.net.SocketInputStream.socketRead(Ljava/io/FileDescriptor;[BIII)I (SocketInputStream.java:115)
+  at java.net.SocketInputStream.read([BIII)I (SocketInputStream.java:168)
+  at java.net.SocketInputStream.read([BII)I (SocketInputStream.java:140)
+  at sun.nio.cs.StreamDecoder.readBytes()I (StreamDecoder.java:284)
+  at sun.nio.cs.StreamDecoder.implRead([CII)I (StreamDecoder.java:326)
+  at sun.nio.cs.StreamDecoder.read([CII)I (StreamDecoder.java:178)
+  at java.io.InputStreamReader.read([CII)I (InputStreamReader.java:181)
+  at java.io.BufferedReader.fill()V (BufferedReader.java:161)
+  at java.io.BufferedReader.readLine(Z)Ljava/lang/String; (BufferedReader.java:326)
+  at java.io.BufferedReader.readLine()Ljava/lang/String; (BufferedReader.java:392)
+  at com.intellij.rt.execution.application.AppMainV2$1.run()V (AppMainV2.java:49)
+
+  locals:
+    objectId=0x7ff76aa28, line=1
+    objectId=0x7ff0f4a18, line=1
+    objectId=0x7ff7fc718, line=1
+    objectId=0x7ff76aa28, line=2
+    objectId=0x7ff7fc718, line=2
+    objectId=0x7ff0f4a18, line=2
+    objectId=0x7ff76aa28, line=3
+    objectId=0x7ff7fc718, line=3
+    objectId=0x7ff7fe728, line=4
+    objectId=0x7ff7fe728, line=5
+    objectId=0x7ff900000, line=5
+    objectId=0x7ff904010, line=5
+    objectId=0x7ff0f01b8, line=5
+    objectId=0x7ff7fe728, line=6
+    objectId=0x7ff900000, line=6
+    objectId=0x7ff6121e0, line=6
+    objectId=0x7ff6121e0, line=7
+    objectId=0x7ff900000, line=7
+    objectId=0x7ff6121b0, line=8
+    objectId=0x7ff6121b0, line=9
+    objectId=0x7ff6121e0, line=9
+    objectId=0x7ff6121b0, line=10
+    objectId=0x7ff0f4728, line=11
+    objectId=0x7ff0f4b10, line=11
+    objectId=0x7ff6121b0, line=11
+
+Thread 0x7ff0f3a60
+  at java.lang.Object.wait(J)V (Native Method)
+  at java.lang.ref.ReferenceQueue.remove(J)Ljava/lang/ref/Reference; (ReferenceQueue.java:155)
+  at java.lang.ref.ReferenceQueue.remove()Ljava/lang/ref/Reference; (ReferenceQueue.java:176)
+  at java.lang.ref.Finalizer$FinalizerThread.run()V (Finalizer.java:170)
+
+  locals:
+    objectId=0x7ff0f3ce0, line=1
+    objectId=0x7ff0f3be0, line=1
+    objectId=0x7ff0f3ce0, line=2
+    objectId=0x7ff0f3a60, line=3
+    objectId=0x7ff0f3d70, line=3
+
+Thread 0x7ff0f4238
+  at java.lang.Object.wait(J)V (Native Method)
+  at java.lang.ref.ReferenceQueue.remove(J)Ljava/lang/ref/Reference; (ReferenceQueue.java:155)
+  at jdk.internal.ref.CleanerImpl.run()V (CleanerImpl.java:148)
+  at java.lang.Thread.run()V (Thread.java:834)
+  at jdk.internal.misc.InnocuousThread.run()V (InnocuousThread.java:134)
+
+  locals:
+    objectId=0x7ff0f43c8, line=1
+    objectId=0x7ff0f43b8, line=1
+    objectId=0x7ff0f4460, line=2
+    objectId=0x7ff0f4238, line=2
+    objectId=0x7ff0f4238, line=2
+    objectId=0x7ff0f4238, line=3
+    objectId=0x7ff0f4238, line=4
+
+Thread 0x7ff0f3800
+  at java.lang.ref.Reference.waitForReferencePendingList()V (Native Method)
+  at java.lang.ref.Reference.processPendingReferences()V (Reference.java:241)
+  at java.lang.ref.Reference$ReferenceHandler.run()V (Reference.java:213)
+
+  locals:
+    objectId=0x7ff0f3800, line=2
+

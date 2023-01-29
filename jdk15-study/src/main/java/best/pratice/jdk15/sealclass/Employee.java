@@ -1,1 +1,0 @@
-/** * Alipay.com Inc. * Copyright (c) 2004-2021 All Rights Reserved. */package best.pratice.jdk15.sealclass;/** * @author yueyi * @version : Employee.java, v 0.1 2021年09月15日 7:42 下午 yueyi Exp $ */public abstract sealed class Employee permits CommonEmployee, Manager {}

@@ -1,1 +1,0 @@
-# 1.学习jdk15的特性1. record class2. sealed class3. pattern type check4. useful NPE

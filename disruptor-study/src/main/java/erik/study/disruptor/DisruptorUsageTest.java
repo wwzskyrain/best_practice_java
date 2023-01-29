@@ -1,20 +1,37 @@
 package erik.study.disruptor;
 
-import erik.study.disruptor.handler.*;
-import com.lmax.disruptor.*;
+import com.lmax.disruptor.BatchEventProcessor;
+import com.lmax.disruptor.EventTranslator;
+import com.lmax.disruptor.EventTranslatorOneArg;
+import com.lmax.disruptor.RingBuffer;
+import com.lmax.disruptor.SleepingWaitStrategy;
+import com.lmax.disruptor.YieldingWaitStrategy;
 import com.lmax.disruptor.dsl.Disruptor;
 import com.lmax.disruptor.dsl.ProducerType;
-import com.sun.istack.internal.NotNull;
 import erik.study.disruptor.event.AppendEvent;
 import erik.study.disruptor.event.LongEvent;
-
+import erik.study.disruptor.handler.AppendEventHandler1;
+import erik.study.disruptor.handler.AppendEventHandler2;
+import erik.study.disruptor.handler.AppendEventHandler3;
+import erik.study.disruptor.handler.AppendEventHandler4;
+import erik.study.disruptor.handler.AppendEventHandler5;
+import erik.study.disruptor.handler.AppendEventHandler6;
+import erik.study.disruptor.handler.AppendEventHandlerPrintId;
+import erik.study.disruptor.handler.AppendEventHandlerWithHeavyConsume;
+import erik.study.disruptor.handler.AppendEventWorkHandler1;
+import erik.study.disruptor.handler.AppendEventWorkHandler2;
+import erik.study.disruptor.handler.AppendEventWorkHandler3;
+import erik.study.disruptor.handler.LongEventHandler1;
 import erik.study.disruptor.producer.LongEventProducerWithTranslator;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Random;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.IntStream;
@@ -30,7 +47,7 @@ public class DisruptorUsageTest {
         private static AtomicLong count = new AtomicLong();
 
         @Override
-        public Thread newThread(@NotNull Runnable r) {
+        public Thread newThread(Runnable r) {
             return new Thread(r, DisruptorUsageThreadFactory.class.getSimpleName() + "_" + count.getAndIncrement());
         }
     }
@@ -48,7 +65,6 @@ public class DisruptorUsageTest {
                         ProducerType.SINGLE,
                         new YieldingWaitStrategy());
 
-
         LongEventHandler1 handler1 = new LongEventHandler1();
 
         disruptor.handleEventsWith(handler1);
@@ -56,7 +72,6 @@ public class DisruptorUsageTest {
         disruptor.handleEventsWith(handler1);
 
         disruptor.start();
-
 
         LongEventProducerWithTranslator producer = new LongEventProducerWithTranslator(disruptor.getRingBuffer());
 
@@ -78,8 +93,8 @@ public class DisruptorUsageTest {
         EventTranslatorOneArg<AppendEvent, AtomicInteger> translatorOneArg =
                 (AppendEvent event, long sequence, AtomicInteger atomicInteger) -> event.setId(atomicInteger.getAndIncrement());
 
-
-        appendEventDisruptor.handleEventsWith(new AppendEventHandlerPrintId(), new AppendEventHandlerPrintId(), new AppendEventHandlerPrintId());
+        appendEventDisruptor.handleEventsWith(new AppendEventHandlerPrintId(), new AppendEventHandlerPrintId(),
+                new AppendEventHandlerPrintId());
         appendEventDisruptor.start();
 
         AtomicInteger atomicInteger = new AtomicInteger(1);
@@ -122,7 +137,8 @@ public class DisruptorUsageTest {
                 new SleepingWaitStrategy());
 
         ExecutorService executor = Executors.newCachedThreadPool();
-        BatchEventProcessor<AppendEvent> processor1 = new BatchEventProcessor<>(ringBuffer, ringBuffer.newBarrier(), new AppendEventHandlerWithHeavyConsume(3));
+        BatchEventProcessor<AppendEvent> processor1 = new BatchEventProcessor<>(ringBuffer, ringBuffer.newBarrier(),
+                new AppendEventHandlerWithHeavyConsume(3));
         ringBuffer.addGatingSequences(processor1.getSequence());
 
         executor.submit(processor1);
@@ -175,7 +191,6 @@ public class DisruptorUsageTest {
         System.out.println("test_over.");
     }
 
-
     /**
      * 多生产者模式
      */
@@ -225,7 +240,7 @@ public class DisruptorUsageTest {
         };
         IntStream.range(0, 100000).forEach(id -> {
             appendEventDisruptor.publishEvent(translator);
-//            sleepSomeMilliSecond(200);
+            //            sleepSomeMilliSecond(200);
         });
         appendEventDisruptor.shutdown();
     }
@@ -242,7 +257,6 @@ public class DisruptorUsageTest {
                 (Runnable r) -> new Thread(r, "thread_name_"),
                 ProducerType.SINGLE,
                 new SleepingWaitStrategy());
-
 
         numberEventDisruptor
                 .handleEventsWithWorkerPool(new AppendEventWorkHandler1("handler1-1"), new AppendEventWorkHandler1("handler1-2"))
@@ -285,7 +299,7 @@ public class DisruptorUsageTest {
 
         private static final int SPAN = 3;
 
-        private Disruptor disruptor;
+        private Disruptor     disruptor;
         private AtomicInteger atomicInteger;
         EventTranslatorOneArg<AppendEvent, Integer> translator = (AppendEvent event, long sequence, Integer arg0) -> event.setId(arg0);
 
