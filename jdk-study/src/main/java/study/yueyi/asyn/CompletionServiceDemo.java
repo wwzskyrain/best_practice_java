@@ -39,6 +39,7 @@ public class CompletionServiceDemo {
 
         for (int i = 0; i < groupNum; i++) {
             try {
+                // 一有线程结束，这里就会返回，而且这里是单线程的哟。
                 String ret = completionService.take().get();
                 System.out.println(ret + "收到");
                 list.add(ret);
@@ -50,39 +51,6 @@ public class CompletionServiceDemo {
         }
 
         System.out.println(list.stream().collect(Collectors.joining("->")));
-        System.exit(0);
-    }
-
-    public static void test1(String[] args) {
-        CompletionService<Long> completionService = new ExecutorCompletionService<>(executor);
-        final int groupSize = 1000;
-        final int groupNum = 100000000 / groupSize;
-
-        for (int i = 0; i < groupNum; i++) {
-            int start = i * groupSize;
-            int end = (i + 1) * groupSize - 1;
-            completionService.submit(() -> {
-                Long sum = 0L;
-                for (int j = start; j <= end; j++) {
-                    sum += j;
-                }
-                return sum;
-            });
-        }
-
-        long result = 0l;
-
-        for (int i = 0; i < groupNum; i++) {
-            try {
-                result += completionService.take().get();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            }
-        }
-
-        System.out.println(result);
         System.exit(0);
     }
 
