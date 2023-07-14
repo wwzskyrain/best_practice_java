@@ -18,6 +18,7 @@
 		<module>junit-study</module>
 		<module>jdk-study</module>
 		<module>easy-rule-study</module>
+		<module>design-pattern</module>
 	</modules>
 
 	<properties>
