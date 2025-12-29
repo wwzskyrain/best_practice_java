@@ -22,7 +22,7 @@ public class AppendEventHandler2 implements EventHandler<AppendEvent>, BatchStar
     @Override
     public void onEvent(AppendEvent event, long sequence, boolean endOfBatch) throws Exception {
         event.handleMe(AppendEventHandler2.class);
-//        System.out.println(erik.study.disruptor.event);
+        System.out.println(event);
 //        logger.info("handle_event, with_id={}", erik.study.disruptor.event.getId());
     }
 }

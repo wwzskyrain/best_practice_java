@@ -93,7 +93,8 @@ public class DisruptorUsageTest {
         EventTranslatorOneArg<AppendEvent, AtomicInteger> translatorOneArg =
                 (AppendEvent event, long sequence, AtomicInteger atomicInteger) -> event.setId(atomicInteger.getAndIncrement());
 
-        appendEventDisruptor.handleEventsWith(new AppendEventHandlerPrintId(), new AppendEventHandlerPrintId(),
+        appendEventDisruptor.handleEventsWith(new AppendEventHandlerPrintId(),
+                new AppendEventHandlerPrintId(),
                 new AppendEventHandlerPrintId());
         appendEventDisruptor.start();
 
@@ -184,8 +185,17 @@ public class DisruptorUsageTest {
         EventTranslatorOneArg<AppendEvent, Integer> translator =
                 (AppendEvent event, long sequence, Integer arg0) -> event.setId(arg0);
 
-        IntStream.range(0, 10).forEach(id ->
-                appendEventDisruptor.publishEvent(translator, id));
+        IntStream.range(0, 1000).forEach(id ->
+                {
+                    appendEventDisruptor.publishEvent(translator, id);
+//                    降低生产速率的代码段。放开注释，则回看到清晰的事件流——每个事件会依次被h1、h2、h3处理。
+                    Random random = new Random(System.currentTimeMillis());
+                    try {
+                        TimeUnit.MILLISECONDS.sleep(random.nextInt(10));
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
 
         appendEventDisruptor.shutdown();
         System.out.println("test_over.");

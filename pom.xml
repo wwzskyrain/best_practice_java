@@ -19,7 +19,10 @@
 		<module>jdk-study</module>
 		<module>easy-rule-study</module>
 		<module>design-pattern</module>
-	</modules>
+        <module>jdbc-study</module>
+        <module>hystrix-study</module>
+        <module>rx-study</module>
+    </modules>
 
 	<properties>
 		<java.version>1.8</java.version>
